@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Store Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Online Book Store</h1>
+        <p>Manage your book inventory in one place</p>
+    </header>
+
+    <main>
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+
+        <section class="panel">
+            <h2>Add a New Book</h2>
+            <form method="POST" action="/">
+                <label for="title">Book title</label>
+                <input id="title" name="title" required maxlength="200">
+
+                <label for="author">Author</label>
+                <input id="author" name="author" required maxlength="200">
+
+                <label for="price">Price (₹)</label>
+                <input id="price" name="price" type="number"
+                       min="0" step="0.01" required>
+
+                <button type="submit">Add Book</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Book Catalogue</h2>
+            <form method="GET" action="/" class="search-form">
+                <input name="search" value="{{ search }}"
+                       placeholder="Search by title or author">
+                <button type="submit">Search</button>
+                <a href="/">Show All</a>
+            </form>
+
+            {% if books %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.id }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>₹{{ "%.2f"|format(book.price) }}</td>
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('delete_book', book_id=book.id) }}"
+                                      onsubmit="return confirm('Delete this book?');">
+                                    <button class="delete-button"
+                                            type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p>No books found.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>Online Book Store Management System</footer>
+</body>
+</html>
